@@ -30,6 +30,8 @@
                   <th>Action</th>
                   <th>#</th>
                   <th>Symbol</th>
+                  <th>Country</th>
+                  <th>Industry</th>
                   <th>Image</th>
                 </tr>
               </thead>
@@ -52,6 +54,12 @@
                       </td>
                       <td class="text-center">
                         <%= data.symbol %>
+                      </td>
+                      <td class="text-center">
+                        <%= data.country %>
+                      </td>
+                      <td class="text-center">
+                        <%= data.industry %>
                       </td>
                       <td class="text-center">
                         <img src="<%= data.image != null ? data.image:data.image_url %>" alt="" class="w-14 mx-auto">

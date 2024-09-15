@@ -20,6 +20,8 @@ const marketValidate = Joi.object({
   image_url: Joi.string().optional().allow(""),
   image: Joi.string().optional().allow(""),
   symbol: Joi.string().required(),
+  country: Joi.string().required(),
+  industry: Joi.string().optional().allow(""),
 });
 
 module.exports = {

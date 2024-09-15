@@ -13,6 +13,15 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
       symbol: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
+      },
+      country: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      industry: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
       image: {
         type: DataTypes.STRING(1000),

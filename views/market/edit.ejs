@@ -57,6 +57,40 @@
 
             <div class="mb-5">
               <label
+                for="country"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Country :</label
+              >
+              <input
+                type="text"
+                id="country"
+                name="country"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="TYX"
+                value="<%= formData?.country %>"
+                required
+              />
+              <p class="text-red-500"><%= errors?.country %></p>
+            </div>
+            <div class="mb-5">
+              <label
+                for="industry"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Industry :</label
+              >
+              <input
+                type="text"
+                id="industry"
+                name="industry"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="TYX"
+                value="<%= formData?.industry %>"
+              />
+              <p class="text-red-500"><%= errors?.industry %></p>
+            </div>
+
+            <div class="mb-5">
+              <label
                 for="image_url"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Image Url :</label

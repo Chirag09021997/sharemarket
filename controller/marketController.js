@@ -33,7 +33,7 @@ const handleImageDeletion = (image) => {
 
 // Reusable function for creating or updating a market
 const saveMarket = async (method, req, res, id = null) => {
-  const { image_url, symbol } = req.body;
+  const { image_url, symbol, country, industry } = req.body;
   const image = req?.file?.filename;
 
   // Validate input data
@@ -72,8 +72,10 @@ const saveMarket = async (method, req, res, id = null) => {
     const data = {
       image_url,
       symbol,
+      country,
+      industry,
     };
-    
+
     if (image) {
       data.image = `${process.env.BASE_URL}/images/${image}`;
     }
@@ -99,7 +101,7 @@ const saveMarket = async (method, req, res, id = null) => {
 // Controller Methods
 const index = async (req, res) => {
   const getData = await commonService.getAll(MarketModel, {
-    attributes: ["id", "symbol", "image", "image_url"],
+    attributes: ["id", "symbol", "image", "image_url", "country", "industry"],
     order: [["created_at", "DESC"]],
   });
   renderPage(req, res, "market/index", {
@@ -122,10 +124,6 @@ const renderFormPage = (req, res, view, pageTitle, id = null) =>
     })
     .catch(() => res.redirect("/market"));
 
-const store = (req, res) => saveMarket("create", req, res);
-
-const update = (req, res) => saveMarket("edit", req, res, req.params.id);
-
 module.exports = {
   index,
   create: (req, res) =>
@@ -134,7 +132,7 @@ module.exports = {
     renderFormPage(req, res, "market/show", "Market Details", req.params.id),
   edit: (req, res) =>
     renderFormPage(req, res, "market/edit", "Edit Market", req.params.id),
-  store,
-  update,
+  store: (req, res) => saveMarket("create", req, res),
+  update: (req, res) => saveMarket("edit", req, res, req.params.id),
   deleteRecord: (req, res) => cmDeleteRecord(req, res, MarketModel),
 };
