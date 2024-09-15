@@ -1,3 +1,4 @@
+const { Op } = require("sequelize"); // Add Op to use the 'not equal' operator for update
 const { commonService } = require("../services/index");
 const { renderPage, cmDeleteRecord } = require("./commonController");
 const { market: MarketModel } = require("../models");
@@ -33,10 +34,9 @@ const handleImageDeletion = (image) => {
 // Reusable function for creating or updating a market
 const saveMarket = async (method, req, res, id = null) => {
   const { image_url, symbol } = req.body;
-  // console.log("req.body =>", req.body);
-
   const image = req?.file?.filename;
 
+  // Validate input data
   const { error } = marketValidate.validate(req.body, { abortEarly: false });
   if (error) {
     handleImageDeletion(image);
@@ -51,16 +51,34 @@ const saveMarket = async (method, req, res, id = null) => {
   }
 
   try {
+    // Check if symbol already exists
+    const symbolCondition = id
+      ? { symbol, id: { [Op.ne]: id } } // For update, exclude the current record
+      : { symbol }; // For create, just check the symbol
+
+    const existingMarket = await commonService.get(MarketModel, {
+      where: symbolCondition,
+    });
+
+    if (existingMarket) {
+      return renderPage(req, res, `market/${method}`, {
+        title: `${method === "create" ? "Create" : "Edit"} Market`,
+        activePage: "market",
+        errorMsg: "Symbol already exists. Please choose a different symbol.",
+        formData: req.body,
+      });
+    }
+
     const data = {
       image_url,
       symbol,
     };
+    
     if (image) {
-      console.log("image =>",image);
-      
       data.image = `${process.env.BASE_URL}/images/${image}`;
     }
 
+    // Perform create or update operation
     if (method === "create") {
       await commonService.create(MarketModel, data);
     } else {
