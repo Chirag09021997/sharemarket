@@ -10,34 +10,44 @@ cron.schedule("0 * * * *", async () => {
     });
     const marketList = market.map((item) => item.symbol);
     if (marketList.length > 0) {
-      const symbolsString = marketList.join(",");
-      const baseURL = "https://query1.finance.yahoo.com/v7/finance/spark";
-      const params = {
-        symbols: symbolsString,
-        range: "1d",
-        interval: "5m",
-        indicators: "close",
-        includeTimestamps: "false",
-        includePrePost: "false",
-        corsDomain: "finance.yahoo.com",
-        ".tsrc": "finance4",
+      const chunkArray = (arr, size) => {
+        const chunked = [];
+        for (let i = 0; i < arr.length; i += size) {
+          chunked.push(arr.slice(i, i + size));
+        }
+        return chunked;
       };
-      await axios
-        .get(baseURL, { params })
-        .then((response) => {
+
+      const chunkedMarkets = chunkArray(marketList, 20);
+      for (const marketChunk of chunkedMarkets) {
+        const symbolsString = marketChunk.join(",");
+        const baseURL = "https://query1.finance.yahoo.com/v7/finance/spark";
+        const params = {
+          symbols: symbolsString,
+          range: "1d",
+          interval: "5m",
+          indicators: "close",
+          includeTimestamps: "false",
+          includePrePost: "false",
+          corsDomain: "finance.yahoo.com",
+          ".tsrc": "finance4",
+        };
+
+        try {
+          const response = await axios.get(baseURL, { params });
           const results = response.data.spark.result;
-          results.map(async (item) => {
+          for (const item of results) {
             const symbol = item.symbol;
             await commonService.update(
               MarketModel,
               { where: { symbol } },
               { response: item.response[0] }
             );
-          });
-        })
-        .catch((error) => {
+          }
+        } catch (error) {
           console.error("axios Error:", error);
-        });
+        }
+      }
     }
   } catch (error) {
     console.error("CronJob Issue =>", error);
