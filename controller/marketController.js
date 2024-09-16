@@ -101,7 +101,7 @@ const saveMarket = async (method, req, res, id = null) => {
 // Controller Methods
 const index = async (req, res) => {
   const getData = await commonService.getAll(MarketModel, {
-    attributes: ["id", "symbol", "image", "image_url", "country", "industry"],
+    attributes: ["id", "symbol", "image", "image_url", "country", "industry", "response"],
     order: [["created_at", "DESC"]],
   });
   renderPage(req, res, "market/index", {
