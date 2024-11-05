@@ -123,6 +123,47 @@
               <p class="text-red-500"><%= errors?.image %></p>
             </div>
 
+            <div class="mb-5">
+              <label
+                for="type"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Type :</label
+              >
+              <select id="type" name="type"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <option value="stock" <%=formData?.type=='stock' ? 'selected' : '' %>>stock</option>
+                <option value="indics" <%=formData?.type=='indics' ? 'selected' : '' %>>indics</option>
+                <option value="commodities" <%=formData?.type=='commodities' ? 'selected' : '' %>>commodities
+                </option>
+                <option value="currencies" <%=formData?.type=='currencies' ? 'selected' : '' %>>currencies
+                </option>
+                <option value="cryptocurrency" <%=formData?.type=='cryptocurrency' ? 'selected' : '' %>
+                  >cryptocurrency</option>
+                <option value="futures" <%=formData?.type=='futures' ? 'selected' : '' %>>futures</option>
+                <option value="etfs" <%=formData?.type=='etfs' ? 'selected' : '' %>>etfs</option>
+                <option value="funds" <%=formData?.type=='funds' ? 'selected' : '' %>>funds</option>
+                <option value="bonds" <%=formData?.type=='bonds' ? 'selected' : '' %>>bonds</option>
+              </select>
+              <p class="text-red-500"><%= errors?.type %></p>
+            </div>
+
+            <div class="mb-5">
+              <label
+                for="subtype"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Sub Type :</label
+              >
+              <input
+                type="text"
+                id="subtype"
+                name="subtype"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="TYX"
+                value="<%= formData?.subtype %>"
+              />
+              <p class="text-red-500"><%= errors?.subtype %></p>
+            </div>
+
             <button
               type="submit"
               class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"

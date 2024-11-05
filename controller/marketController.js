@@ -33,7 +33,7 @@ const handleImageDeletion = (image) => {
 
 // Reusable function for creating or updating a market
 const saveMarket = async (method, req, res, id = null) => {
-  const { image_url, symbol, country, industry } = req.body;
+  const { image_url, symbol, country, industry, type, subtype } = req.body;
   const image = req?.file?.filename;
 
   // Validate input data
@@ -74,6 +74,8 @@ const saveMarket = async (method, req, res, id = null) => {
       symbol,
       country,
       industry,
+      type, 
+      subtype
     };
 
     if (image) {
@@ -100,15 +102,31 @@ const saveMarket = async (method, req, res, id = null) => {
 
 // Controller Methods
 const index = async (req, res) => {
-  const getData = await commonService.getAll(MarketModel, {
-    attributes: ["id", "symbol", "image", "image_url", "country", "industry", "response"],
-    order: [["created_at", "DESC"]],
-  });
-  renderPage(req, res, "market/index", {
-    title: "Markets",
-    activePage: "market",
-    getData,
-  });
+  const page = parseInt(req.query.page) || 1; 
+  const limit = parseInt(req.query.limit) || 25;
+  const offset = (page - 1) * limit; 
+  try {
+    const count = await MarketModel.count();   
+    const getData = await commonService.getAll(MarketModel, {
+      attributes: ["id", "symbol", "image", "image_url", "country", "industry", "response", "type", "subtype"],
+      order: [["created_at", "DESC"]],
+      limit: limit,
+      offset: offset,
+    });
+    const totalPages = Math.ceil(count / limit);
+    renderPage(req, res, "market/index", {
+      title: "Markets",
+      activePage: "market",
+      getData,
+      limit,
+      currentPage: page,
+      totalPages: totalPages,
+      totalRecords: count,
+    });
+  } catch (error) {
+    console.error("Error fetching market data:", error);
+    res.status(500).send("Internal Server Error");
+  }
 };
 
 const renderFormPage = (req, res, view, pageTitle, id = null) =>

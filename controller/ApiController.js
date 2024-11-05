@@ -6,7 +6,17 @@ const path = require("path");
 const getAll = async (req, res) => {
   try {
     const market = await MarketModel.findAll({
-      attributes: ["id", "symbol", "image", "image_url", "response", "country", "industry"],
+      attributes: [
+        "id",
+        "symbol",
+        "image",
+        "image_url",
+        "response",
+        "country",
+        "industry",
+        "type",
+        "subtype",
+      ],
     });
     res.json({
       status: true,
@@ -22,7 +32,17 @@ const getSingle = async (req, res) => {
   const id = req.params.id;
   try {
     const market = await MarketModel.findOne({
-      attributes: ["id", "symbol", "image", "image_url", "response", "country", "industry"],
+      attributes: [
+        "id",
+        "symbol",
+        "image",
+        "image_url",
+        "response",
+        "country",
+        "industry",
+        "type",
+        "subtype",
+      ],
       where: { id },
     });
     res.json({
@@ -51,12 +71,23 @@ const multipleCreate = async (req, res) => {
     }
     const allRecords = [];
     for (const [country, records] of Object.entries(parsedData)) {
-      records.forEach(async(record) => {
-       await allRecords.push({symbol:record.Symbol, industry:record.Industry, country:record.country, created_at:Date.now(), updated_at:Date.now()});
+      records.forEach(async (record) => {
+        await allRecords.push({
+          symbol: record.Symbol,
+          industry: record.Industry,
+          country: record.country,
+          created_at: Date.now(),
+          updated_at: Date.now(),
+          type: record.type,
+          subtype: record.subtype,
+        });
       });
     }
-    
-    const result = await MarketModel.bulkCreate(allRecords, { validate: true , ignoreDuplicates: true, });
+
+    const result = await MarketModel.bulkCreate(allRecords, {
+      validate: true,
+      ignoreDuplicates: true,
+    });
     fs.unlinkSync(filePath);
     res.status(201).json({ status: true, data: result });
   } catch (error) {

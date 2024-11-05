@@ -35,6 +35,14 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
         type: DataTypes.JSON,
         defaultValue: {},
       },
+      type:{
+        type: DataTypes.ENUM('stock', 'indics', 'commodities', 'currencies', 'cryptocurrency', 'futures', 'etfs', 'funds', 'bonds'),
+        defaultValue:"stock"
+      },
+      subtype: {
+        type: DataTypes.STRING(1000),
+        allowNull: true,
+      },
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,

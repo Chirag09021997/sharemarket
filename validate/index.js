@@ -22,6 +22,8 @@ const marketValidate = Joi.object({
   symbol: Joi.string().required(),
   country: Joi.string().required(),
   industry: Joi.string().optional().allow(""),
+  type: Joi.string().required().valid('stock', 'indics', 'commodities', 'currencies', 'cryptocurrency', 'futures', 'etfs', 'funds', 'bonds'),
+  subtype: Joi.string().optional().allow(""),
 });
 
 module.exports = {
