@@ -43,6 +43,10 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
         type: DataTypes.STRING(1000),
         allowNull: true,
       },
+      overview: {
+        type: DataTypes.ENUM("active", "inactive"),
+        defaultValue: "active",
+      },
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,

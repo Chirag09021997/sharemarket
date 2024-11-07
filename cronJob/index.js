@@ -2,7 +2,7 @@ const cron = require("node-cron");
 const { market: MarketModel } = require("../models/index");
 const { commonService } = require("../services/index");
 const axios = require("axios");
-cron.schedule("0 * * * *", async () => {
+cron.schedule("*/3 * * * *", async () => {
   console.log(`cron job testing... Time ::  ${Date()}`);
   try {
     const market = await MarketModel.findAll({

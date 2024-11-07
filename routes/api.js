@@ -10,4 +10,7 @@ router.post(
   upload.single("jsonfile"),
   ApiController.multipleCreate
 );
+router.post("/get-stocks", ApiController.getStocks);
+router.post("/get-stocks-subtypes", ApiController.getStockSubtypes);
+router.post("/overview", ApiController.overViewList);
 module.exports = router;

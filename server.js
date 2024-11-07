@@ -44,7 +44,7 @@ const synchronizeAndSeed = async () => {
 app.use("/", indexRouter);
 app.use("/api", apiRouter);
 //
-require("./cronJob/index");
+// require("./cronJob/index");
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
