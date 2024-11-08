@@ -100,6 +100,9 @@ const multipleCreate = async (req, res) => {
 const getStocks = async (req, res) => {
   try {
     const { country = "", industry = "", type = "" } = req.body;
+    const { page = 0, limit = 0 } = req.query;
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
     if (type.length == 0) {
       return res.status(400).json({ status: false, message: "type required" });
     }
@@ -125,11 +128,30 @@ const getStocks = async (req, res) => {
     if (industry.length > 0) {
       conditionData.where.industry = industry;
     }
+    if (pageNumber > 0) {
+      conditionData.offset = (pageNumber - 1) * limitNumber;
+    }
+    if (limitNumber > 0) {
+      conditionData.limit = limitNumber;
+    }
     const market = await MarketModel.findAll(conditionData);
+    const totalCount = await MarketModel.count({
+      where: {
+        type,
+        ...(country.length > 0 && { country }),
+        ...(industry.length > 0 && { industry }),
+      },
+    });
     res.json({
       status: true,
       message: `Get all type stocks record successfully.`,
       data: market,
+      pagination: {
+        currentPage: pageNumber,
+        totalPages: limitNumber > 0 ? Math.ceil(totalCount / limitNumber) : 0,
+        totalCount,
+        limit: limitNumber,
+      },
     });
   } catch (error) {
     console.error(`Error fetching stock data:`, error);
@@ -207,23 +229,16 @@ const overViewList = async (req, res) => {
         subtype: { [Op.in]: possibleSubtypes },
       },
     });
-    const groupedBySubtype = marketList.reduce((acc, market) => {
-      const country = market.country;
-      if (!acc[country]) {
-        acc[country] = [];
-      }
-      acc[country].push(market);
+    const organizedData = marketList.reduce((acc, item) => {
+      const key = item.subtype;
+      if (acc[key]) acc[key].push(item);
       return acc;
-    }, {});
-    const finalResponse = possibleSubtypes.reduce((acc, subtype) => {
-      acc[subtype] = groupedBySubtype[subtype] || [];
-      return acc;
-    }, {});
+    }, Object.fromEntries(possibleSubtypes.map((subtype) => [subtype, []])));
 
     res.json({
       status: true,
       message: `Get all overview record successfully.`,
-      data: finalResponse,
+      data: organizedData,
     });
   } catch (error) {
     console.error(`Error fetching ${type} data:`, error);

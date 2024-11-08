@@ -15,40 +15,7 @@
           ordering: true,
           order: [[1, 'asc']],
         });
-
-        // $('.overview-checkbox').on('change', function () {
-        //   const id = $(this).data('id');
-        //   const isChecked = $(this).is(':checked');
-        //   $.ajax({
-        //     url: `/indics/overview/${id}`,
-        //     type: 'POST',
-        //     success: function (response) {
-        //       alert('Overview status updated successfully');
-        //     },
-        //     error: function (error) {
-        //       alert('Failed to update overview status');
-        //       $(this).prop('checked', !isChecked);
-        //     }
-        //   });
-        // });
       });
-
-      function overviewChange(checkbox) {
-        const id = $(checkbox).data('id');
-        const isChecked = $(checkbox).is(':checked');
-        $.ajax({
-          url: `/indics/overview/${id}`,
-          type: 'POST',
-          data: { checked: isChecked },
-          success: function (response) {
-            alert('Overview status updated successfully');
-          },
-          error: function (error) {
-            alert('Failed to update overview status');
-            $(checkbox).prop('checked', !isChecked);
-          }
-        });
-      }
     </script>
 </head>
 
@@ -59,7 +26,7 @@
         <section class="p-3 sm:p-5">
           <div class="bg-white shadow-md sm:rounded-lg mx-auto p-4 my-5">
             <div class="flex justify-between items-center">
-              <h1 class="text-xl font-bold">List Indics Market</h1>
+              <h1 class="text-xl font-bold">List Currencies Market</h1>
               <a href="/market/create" class="text-xl bg-blue-500 p-3 rounded-md text-white">Create</a>
             </div>
           </div>
@@ -76,7 +43,6 @@
                   <th>Image</th>
                   <th>Type</th>
                   <th>Response</th>
-                  <th>Overview</th>
                 </tr>
               </thead>
               <tbody>
@@ -122,10 +88,6 @@
                                 <% } else { %>
                                   No response data
                                   <% } %>
-                      </td>
-                      <td class="text-center">
-                        <input type="checkbox" onclick="overviewChange(this)" data-id="<%= data.id %>"
-                          <%=data.overview=='active' ? 'checked' : '' %> />
                       </td>
                     </tr>
                     <% }) %>

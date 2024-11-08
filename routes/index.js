@@ -4,6 +4,7 @@ const authController = require("../controller/authenticationController");
 const { authCheck } = require("../middleware/auth.middleware");
 const dashBoardController = require("../controller/dashBoardController");
 const indicsController = require("../controller/indicsController");
+const currenciesController = require("../controller/currenciesController");
 /* GET home page. */
 router.get("/", authCheck, (req, res) => {
   res.redirect("/dashboard");
@@ -20,4 +21,5 @@ router.get("/dashboard", authCheck, dashBoardController.dashboard);
 router.use("/market", authCheck, require("./market"));
 router.get("/indics", authCheck, indicsController.index);
 router.post("/indics/overview/:id", authCheck, indicsController.changeOverview);
+router.get("/currencies", authCheck, currenciesController.index);
 module.exports = router;
