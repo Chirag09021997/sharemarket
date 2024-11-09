@@ -3,7 +3,7 @@ const fs = require("fs");
 const { symbol } = require("joi");
 const path = require("path");
 const { Op } = require("sequelize");
-
+const sectorJson = require("../json/sector.json");
 const getAll = async (req, res) => {
   try {
     const market = await MarketModel.findAll({
@@ -207,7 +207,7 @@ const getStockSubtypes = async (req, res) => {
 const overViewList = async (req, res) => {
   try {
     const possibleSubtypes = [
-      "asia_specific",
+      "asia_pacific",
       "americas",
       "europe_middleeast_africa",
     ];
@@ -234,7 +234,7 @@ const overViewList = async (req, res) => {
       if (acc[key]) acc[key].push(item);
       return acc;
     }, Object.fromEntries(possibleSubtypes.map((subtype) => [subtype, []])));
-
+    organizedData.sector = sectorJson;
     res.json({
       status: true,
       message: `Get all overview record successfully.`,

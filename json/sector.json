@@ -1,0 +1,214 @@
+{
+  "marketCap": {
+    "raw": 67611504017408,
+    "fmt": "67.612T",
+    "longFmt": "67,611,504,017,408"
+  },
+  "description": "Sectors represent large sections of the economy and include multiple companies. Explore different sector performances below to analyze the economy as a whole.",
+  "sectorsCount": 11,
+  "industriesCount": 145,
+  "list": [
+    {
+      "regMarketChangePercent": {
+        "raw": -0.00012688886,
+        "fmt": "-0.01%"
+      },
+      "name": "All Sectors",
+      "ytdReturn": {
+        "raw": 0.23497337,
+        "fmt": "23.50%"
+      },
+      "marketWeight": {
+        "raw": 1,
+        "fmt": "100.00%"
+      }
+    },
+    {
+      "symbol": "^YH311",
+      "regMarketChangePercent": {
+        "raw": -0.00010523782,
+        "fmt": "-0.01%"
+      },
+      "name": "Technology",
+      "ytdReturn": {
+        "raw": 0.3493176,
+        "fmt": "34.93%"
+      },
+      "marketWeight": {
+        "raw": 0.289487,
+        "fmt": "28.95%"
+      },
+      "key": "technology"
+    },
+    {
+      "symbol": "^YH103",
+      "regMarketChangePercent": {
+        "raw": 0.00032873364,
+        "fmt": "0.03%"
+      },
+      "name": "Financial Services",
+      "ytdReturn": {
+        "raw": 0.27087057,
+        "fmt": "27.09%"
+      },
+      "marketWeight": {
+        "raw": 0.15041266,
+        "fmt": "15.04%"
+      },
+      "key": "financial-services"
+    },
+    {
+      "symbol": "^YH102",
+      "regMarketChangePercent": {
+        "raw": 0.00017867405,
+        "fmt": "0.02%"
+      },
+      "name": "Consumer Cyclical",
+      "ytdReturn": {
+        "raw": 0.20793934,
+        "fmt": "20.79%"
+      },
+      "marketWeight": {
+        "raw": 0.110239364,
+        "fmt": "11.02%"
+      },
+      "key": "consumer-cyclical"
+    },
+    {
+      "symbol": "^YH206",
+      "regMarketChangePercent": {
+        "raw": 0.0008166222,
+        "fmt": "0.08%"
+      },
+      "name": "Healthcare",
+      "ytdReturn": {
+        "raw": 0.10204019,
+        "fmt": "10.20%"
+      },
+      "marketWeight": {
+        "raw": 0.10317574,
+        "fmt": "10.32%"
+      },
+      "key": "healthcare"
+    },
+    {
+      "symbol": "^YH308",
+      "regMarketChangePercent": {
+        "raw": -0.000115209514,
+        "fmt": "-0.01%"
+      },
+      "name": "Communication Services",
+      "ytdReturn": {
+        "raw": 0.30015212,
+        "fmt": "30.02%"
+      },
+      "marketWeight": {
+        "raw": 0.08703034,
+        "fmt": "8.70%"
+      },
+      "key": "communication-services"
+    },
+    {
+      "symbol": "^YH310",
+      "regMarketChangePercent": {
+        "raw": -0.0006789829,
+        "fmt": "-0.07%"
+      },
+      "name": "Industrials",
+      "ytdReturn": {
+        "raw": 0.1683303,
+        "fmt": "16.83%"
+      },
+      "marketWeight": {
+        "raw": 0.08689927,
+        "fmt": "8.69%"
+      },
+      "key": "industrials"
+    },
+    {
+      "symbol": "^YH205",
+      "regMarketChangePercent": {
+        "raw": 0.0004402501,
+        "fmt": "0.04%"
+      },
+      "name": "Consumer Defensive",
+      "ytdReturn": {
+        "raw": 0.15690151,
+        "fmt": "15.69%"
+      },
+      "marketWeight": {
+        "raw": 0.05309571,
+        "fmt": "5.31%"
+      },
+      "key": "consumer-defensive"
+    },
+    {
+      "symbol": "^YH309",
+      "regMarketChangePercent": {
+        "raw": -0.0024664458,
+        "fmt": "-0.25%"
+      },
+      "name": "Energy",
+      "ytdReturn": {
+        "raw": 0.09932613,
+        "fmt": "9.93%"
+      },
+      "marketWeight": {
+        "raw": 0.045345396,
+        "fmt": "4.53%"
+      },
+      "key": "energy"
+    },
+    {
+      "symbol": "^YH104",
+      "regMarketChangePercent": {
+        "raw": -0.0005834834,
+        "fmt": "-0.06%"
+      },
+      "name": "Real Estate",
+      "ytdReturn": {
+        "raw": 0.13023795,
+        "fmt": "13.02%"
+      },
+      "marketWeight": {
+        "raw": 0.025719969,
+        "fmt": "2.57%"
+      },
+      "key": "real-estate"
+    },
+    {
+      "symbol": "^YH101",
+      "regMarketChangePercent": {
+        "raw": -0.0029650736,
+        "fmt": "-0.30%"
+      },
+      "name": "Basic Materials",
+      "ytdReturn": {
+        "raw": 0.09920443,
+        "fmt": "9.92%"
+      },
+      "marketWeight": {
+        "raw": 0.025619902,
+        "fmt": "2.56%"
+      },
+      "key": "basic-materials"
+    },
+    {
+      "symbol": "^YH207",
+      "regMarketChangePercent": {
+        "raw": -0.000031382835,
+        "fmt": "-0.00%"
+      },
+      "name": "Utilities",
+      "ytdReturn": {
+        "raw": 0.31831354,
+        "fmt": "31.83%"
+      },
+      "marketWeight": {
+        "raw": 0.022974614,
+        "fmt": "2.30%"
+      },
+      "key": "utilities"
+    }
+  ]
+}
