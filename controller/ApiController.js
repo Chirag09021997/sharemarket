@@ -4,6 +4,9 @@ const { symbol } = require("joi");
 const path = require("path");
 const { Op } = require("sequelize");
 const sectorJson = require("../json/sector.json");
+const settingJson = require("../json/setting.json");
+const { commonService } = require("../services/index");
+
 const getAll = async (req, res) => {
   try {
     const market = await MarketModel.findAll({
@@ -211,6 +214,22 @@ const overViewList = async (req, res) => {
       "americas",
       "europe_middleeast_africa",
     ];
+    let apiLast = settingJson?.api_last || 0;
+    const offset = apiLast * 20;
+    const market = await MarketModel.findAll({
+      attributes: ["symbol"],
+      offset: offset,
+      limit: 20,
+    });
+    const marketSymbols = market.map((item) => item.symbol);
+    let stringSymbols = "";
+    if (marketSymbols.length > 0) {
+      stringSymbols = marketSymbols.join(",");
+      updateAPILastFlag(++apiLast);
+    } else {
+      updateAPILastFlag(0);
+    }
+
     const marketList = await MarketModel.findAll({
       attributes: [
         "id",
@@ -235,6 +254,7 @@ const overViewList = async (req, res) => {
       return acc;
     }, Object.fromEntries(possibleSubtypes.map((subtype) => [subtype, []])));
     organizedData.sector = sectorJson;
+    organizedData.symbols = stringSymbols;
     res.json({
       status: true,
       message: `Get all overview record successfully.`,
@@ -246,6 +266,42 @@ const overViewList = async (req, res) => {
   }
 };
 
+const updateAPILastFlag = (newFlagValue) => {
+  settingJson.api_last = newFlagValue;
+  fs.writeFileSync(
+    "./json/setting.json",
+    JSON.stringify(settingJson, null, 2),
+    "utf8"
+  );
+};
+
+const updateMarketData = async (req, res) => {
+  const { response } = req.body;
+  try {
+    if (Array.isArray(response) && response?.length > 0) {
+      for (const item of response) {
+        const symbol = item.symbol;
+        await commonService.update(
+          MarketModel,
+          { where: { symbol } },
+          { response: item.response[0] }
+        );
+      }
+      res.json({
+        status: true,
+        message: `Market record update successfully.`,
+      });
+    } else {
+      res
+        .status(400)
+        .json({ status: false, error: "Market record not found." });
+    }
+  } catch (error) {
+    console.error(`Error fetching update market data:`, error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   getAll,
   getSingle,
@@ -253,4 +309,5 @@ module.exports = {
   getStocks,
   getStockSubtypes,
   overViewList,
+  updateMarketData,
 };
