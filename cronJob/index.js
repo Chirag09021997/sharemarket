@@ -5,7 +5,7 @@ const axios = require("axios");
 const settingJson = require("../json/setting.json");
 const fs = require("fs");
 
-const BATCH_SIZE = 20;
+const BATCH_SIZE = 19;
 const updateCronLastFlag = (newFlagValue) => {
   settingJson.cron_last = newFlagValue;
   fs.writeFileSync(

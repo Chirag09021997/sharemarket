@@ -208,6 +208,7 @@ const getStockSubtypes = async (req, res) => {
 };
 
 const overViewList = async (req, res) => {
+  const BATCH_SIZE = 19;
   try {
     const possibleSubtypes = [
       "asia_pacific",
@@ -215,11 +216,11 @@ const overViewList = async (req, res) => {
       "europe_middleeast_africa",
     ];
     let apiLast = settingJson?.api_last || 0;
-    const offset = apiLast * 20;
+    const offset = apiLast * BATCH_SIZE;
     const market = await MarketModel.findAll({
       attributes: ["symbol"],
       offset: offset,
-      limit: 20,
+      limit: BATCH_SIZE,
     });
     const marketSymbols = market.map((item) => item.symbol);
     let stringSymbols = "";
@@ -277,6 +278,7 @@ const updateAPILastFlag = (newFlagValue) => {
 
 const updateMarketData = async (req, res) => {
   const { response } = req.body;
+  const BATCH_SIZE = 19;
   try {
     if (Array.isArray(response) && response?.length > 0) {
       for (const item of response) {
@@ -287,9 +289,25 @@ const updateMarketData = async (req, res) => {
           { response: item.response[0] }
         );
       }
+      let apiLast = settingJson?.api_last || 0;
+      const offset = apiLast * BATCH_SIZE;
+      const market = await MarketModel.findAll({
+        attributes: ["symbol"],
+        offset: offset,
+        limit: BATCH_SIZE,
+      });
+      const marketSymbols = market.map((item) => item.symbol);
+      let stringSymbols = "";
+      if (marketSymbols.length > 0) {
+        stringSymbols = marketSymbols.join(",");
+        updateAPILastFlag(++apiLast);
+      } else {
+        updateAPILastFlag(0);
+      }
       res.json({
         status: true,
         message: `Market record update successfully.`,
+        data: { symbols: stringSymbols },
       });
     } else {
       res
