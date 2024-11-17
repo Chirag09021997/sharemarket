@@ -2,7 +2,7 @@ const { market: MarketModel } = require("../models/index");
 const fs = require("fs");
 const { symbol } = require("joi");
 const path = require("path");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 const sectorJson = require("../json/sector.json");
 const settingJson = require("../json/setting.json");
 const { commonService } = require("../services/index");
@@ -320,6 +320,63 @@ const updateMarketData = async (req, res) => {
   }
 };
 
+const searchMarket = async (req, res) => {
+  const { search = "", page = 1, limit = 25 } = req.query;
+  try {
+    const pageNumber = Math.max(parseInt(page, 10), 1);
+    const limitNumber = Math.max(parseInt(limit, 10), 25);
+    const whereCondition = {
+      [Op.and]: [
+        Sequelize.where(
+          Sequelize.fn("LOWER", Sequelize.col("symbol")),
+          "LIKE",
+          `%${search.toLowerCase()}%`
+        ),
+        Sequelize.where(
+          Sequelize.fn("LOWER", Sequelize.col("industry")),
+          "LIKE",
+          `%${search.toLowerCase()}%`
+        ),
+      ],
+    };
+
+    const [market, totalCount] = await Promise.all([
+      MarketModel.findAll({
+        where: whereCondition,
+        attributes: [
+          "id",
+          "symbol",
+          "image",
+          "image_url",
+          "response",
+          "country",
+          "industry",
+          "type",
+          "subtype",
+        ],
+        offset: (pageNumber - 1) * limitNumber,
+        limit: limitNumber,
+      }),
+      MarketModel.count({ where: whereCondition }),
+    ]);
+
+    res.json({
+      status: true,
+      message: "Search market results fetched successfully.",
+      data: market,
+      pagination: {
+        currentPage: pageNumber,
+        totalPages: Math.ceil(totalCount / limitNumber),
+        totalCount,
+        limit: limitNumber,
+      },
+    });
+  } catch (error) {
+    console.error("Error in searchData:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   getAll,
   getSingle,
@@ -328,4 +385,5 @@ module.exports = {
   getStockSubtypes,
   overViewList,
   updateMarketData,
+  searchMarket,
 };
