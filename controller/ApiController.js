@@ -9,7 +9,7 @@ const { commonService } = require("../services/index");
 
 const getAll = async (req, res) => {
   try {
-    const market = await MarketModel.findAll({
+    const markets = await MarketModel.findAll({
       attributes: [
         "id",
         "symbol",
@@ -22,10 +22,19 @@ const getAll = async (req, res) => {
         "subtype",
       ],
     });
+    const modifiedMarkets = markets.map((market) => {
+      const { image, image_url } = market.dataValues;
+      const finalImage = image && image.length > 0 ? image : image_url;
+      delete market.dataValues.image_url;
+      return {
+        ...market.dataValues,
+        image: finalImage,
+      };
+    });
     res.json({
       status: true,
       message: "Get all market record successFully.",
-      data: market,
+      data: modifiedMarkets,
     });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
@@ -49,10 +58,22 @@ const getSingle = async (req, res) => {
       ],
       where: { id },
     });
+    if (!market) {
+      return res.status(404).json({
+        status: false,
+        message: "Market not found.",
+      });
+    }
+    const { image, image_url } = market.dataValues;
+    let finalImage = image && image.length > 0 ? image : image_url;
+    delete market.dataValues.image_url;
     res.json({
       status: true,
       message: "Get single market record successFully.",
-      data: market,
+      data: {
+        ...market.dataValues,
+        image: finalImage,
+      },
     });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
@@ -138,6 +159,15 @@ const getStocks = async (req, res) => {
       conditionData.limit = limitNumber;
     }
     const market = await MarketModel.findAll(conditionData);
+    const modifiedMarkets = market.map((market) => {
+      const { image, image_url } = market.dataValues;
+      const finalImage = image && image.length > 0 ? image : image_url;
+      delete market.dataValues.image_url;
+      return {
+        ...market.dataValues,
+        image: finalImage,
+      };
+    });
     const totalCount = await MarketModel.count({
       where: {
         type,
@@ -148,7 +178,7 @@ const getStocks = async (req, res) => {
     res.json({
       status: true,
       message: `Get all type stocks record successfully.`,
-      data: market,
+      data: modifiedMarkets,
       pagination: {
         currentPage: pageNumber,
         totalPages: limitNumber > 0 ? Math.ceil(totalCount / limitNumber) : 0,
@@ -190,7 +220,16 @@ const getStockSubtypes = async (req, res) => {
       },
     });
 
-    const organizedData = market.reduce((acc, item) => {
+    const modifiedMarkets = market.map((market) => {
+      const { image, image_url } = market.dataValues;
+      const finalImage = image && image.length > 0 ? image : image_url;
+      delete market.dataValues.image_url;
+      return {
+        ...market.dataValues,
+        image: finalImage,
+      };
+    });
+    const organizedData = modifiedMarkets.reduce((acc, item) => {
       const key = item.subtype;
       if (acc[key]) acc[key].push(item);
       return acc;
@@ -249,7 +288,16 @@ const overViewList = async (req, res) => {
         subtype: { [Op.in]: possibleSubtypes },
       },
     });
-    const organizedData = marketList.reduce((acc, item) => {
+    const modifiedMarkets = marketList.map((market) => {
+      const { image, image_url } = market.dataValues;
+      const finalImage = image && image.length > 0 ? image : image_url;
+      delete market.dataValues.image_url;
+      return {
+        ...market.dataValues,
+        image: finalImage,
+      };
+    });
+    const organizedData = modifiedMarkets.reduce((acc, item) => {
       const key = item.subtype;
       if (acc[key]) acc[key].push(item);
       return acc;
@@ -360,10 +408,19 @@ const searchMarket = async (req, res) => {
       MarketModel.count({ where: whereCondition }),
     ]);
 
+    const modifiedMarkets = market.map((market) => {
+      const { image, image_url } = market.dataValues;
+      const finalImage = image && image.length > 0 ? image : image_url;
+      delete market.dataValues.image_url;
+      return {
+        ...market.dataValues,
+        image: finalImage,
+      };
+    });
     res.json({
       status: true,
       message: "Search market results fetched successfully.",
-      data: market,
+      data: modifiedMarkets,
       pagination: {
         currentPage: pageNumber,
         totalPages: Math.ceil(totalCount / limitNumber),

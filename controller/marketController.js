@@ -74,8 +74,8 @@ const saveMarket = async (method, req, res, id = null) => {
       symbol,
       country,
       industry,
-      type, 
-      subtype
+      type,
+      subtype,
     };
 
     if (image) {
@@ -102,13 +102,23 @@ const saveMarket = async (method, req, res, id = null) => {
 
 // Controller Methods
 const index = async (req, res) => {
-  const page = parseInt(req.query.page) || 1; 
+  const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 25;
-  const offset = (page - 1) * limit; 
+  const offset = (page - 1) * limit;
   try {
-    const count = await MarketModel.count();   
+    const count = await MarketModel.count();
     const getData = await commonService.getAll(MarketModel, {
-      attributes: ["id", "symbol", "image", "image_url", "country", "industry", "response", "type", "subtype"],
+      attributes: [
+        "id",
+        "symbol",
+        "image",
+        "image_url",
+        "country",
+        "industry",
+        "response",
+        "type",
+        "subtype",
+      ],
       order: [["created_at", "DESC"]],
       limit: limit,
       offset: offset,
@@ -133,7 +143,7 @@ const renderFormPage = (req, res, view, pageTitle, id = null) =>
   commonService
     .get(MarketModel, { where: { id } })
     .then((detail) => {
-      if (id && !detail) return res.redirect("/market");
+      if (id && !detail) return res.redirect("/market");    
       renderPage(req, res, view, {
         title: pageTitle,
         activePage: "market",
@@ -141,6 +151,19 @@ const renderFormPage = (req, res, view, pageTitle, id = null) =>
       });
     })
     .catch(() => res.redirect("/market"));
+
+const removeImage = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await MarketModel.update({ image: "" }, { where: { id } });
+    return res
+      .status(200)
+      .send({ status: true, message: "Image removed successfully" });
+  } catch (error) {
+    console.error("Error removing image:", error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+};
 
 module.exports = {
   index,
@@ -153,4 +176,5 @@ module.exports = {
   store: (req, res) => saveMarket("create", req, res),
   update: (req, res) => saveMarket("edit", req, res, req.params.id),
   deleteRecord: (req, res) => cmDeleteRecord(req, res, MarketModel),
+  removeImage,
 };

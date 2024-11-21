@@ -15,53 +15,53 @@ const updateCronLastFlag = (newFlagValue) => {
   );
 };
 
-cron.schedule("*/30 * * * * *", async () => {
-  console.log(`cron job testing... Time ::  ${Date()}`);
-  try {
-    let cronLast = settingJson?.cron_last || 0;
-    const offset = cronLast * BATCH_SIZE;
-    const market = await MarketModel.findAll({
-      attributes: ["symbol"],
-      offset: offset,
-      limit: BATCH_SIZE,
-    });
-    const marketList = market.map((item) => item.symbol);
-    if (marketList.length > 0) {
-      const symbolsString = marketList.join(",");
-      const baseURL = "https://query1.finance.yahoo.com/v7/finance/spark";
-      const params = {
-        symbols: symbolsString,
-        range: "1d",
-        interval: "5m",
-        indicators: "close",
-        includeTimestamps: "false",
-        includePrePost: "false",
-        corsDomain: "finance.yahoo.com",
-        ".tsrc": "finance",
-      };
+// cron.schedule("*/30 * * * * *", async () => {
+//   console.log(`cron job testing... Time ::  ${Date()}`);
+//   try {
+//     let cronLast = settingJson?.cron_last || 0;
+//     const offset = cronLast * BATCH_SIZE;
+//     const market = await MarketModel.findAll({
+//       attributes: ["symbol"],
+//       offset: offset,
+//       limit: BATCH_SIZE,
+//     });
+//     const marketList = market.map((item) => item.symbol);
+//     if (marketList.length > 0) {
+//       const symbolsString = marketList.join(",");
+//       const baseURL = "https://query1.finance.yahoo.com/v7/finance/spark";
+//       const params = {
+//         symbols: symbolsString,
+//         range: "1d",
+//         interval: "5m",
+//         indicators: "close",
+//         includeTimestamps: "false",
+//         includePrePost: "false",
+//         corsDomain: "finance.yahoo.com",
+//         ".tsrc": "finance",
+//       };
 
-      try {
-        const response = await axios.get(baseURL, { params });
-        const results = response.data.spark.result;
-        for (const item of results) {
-          const symbol = item.symbol;
-          await commonService.update(
-            MarketModel,
-            { where: { symbol } },
-            { response: item.response[0] }
-          );
-        }
-        updateCronLastFlag(++cronLast);
-      } catch (error) {
-        console.error("axios Error:", error);
-      }
-    } else {
-      updateCronLastFlag(0);
-    }
-  } catch (error) {
-    console.error("CronJob Issue =>", error);
-  }
-});
+//       try {
+//         const response = await axios.get(baseURL, { params });
+//         const results = response.data.spark.result;
+//         for (const item of results) {
+//           const symbol = item.symbol;
+//           await commonService.update(
+//             MarketModel,
+//             { where: { symbol } },
+//             { response: item.response[0] }
+//           );
+//         }
+//         updateCronLastFlag(++cronLast);
+//       } catch (error) {
+//         console.error("axios Error:", error);
+//       }
+//     } else {
+//       updateCronLastFlag(0);
+//     }
+//   } catch (error) {
+//     console.error("CronJob Issue =>", error);
+//   }
+// });
 
 // 10-minute cron job
 cron.schedule("*/10 * * * *", async () => {

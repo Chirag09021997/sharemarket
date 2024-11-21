@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { renderPage } = require("./commonController");
 
 const settingsPath = path.join(__dirname, "../json/setting.json");
 

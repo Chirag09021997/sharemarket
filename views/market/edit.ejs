@@ -121,6 +121,16 @@
                 value="<%= formData?.image %>"
               />
               <p class="text-red-500"><%= errors?.image %></p>
+            
+              <% if(formData?.image !== '') { %>
+                <div class="my-2 inline-block " id="removeImageDiv">
+                  <p id="remove-image" data-image="<%= formData?.image %>"  data-id="<%= formData?.id %>"
+                    class=" bg-red-500 text-white rounded my-1 p-1 text-xs w-10">
+                    x
+                  </p>
+                  <img src="<%= formData?.image %>" alt="image" class="w-28 h-28 object-cover rounded-md">
+                </div>  
+                <% } %>                      
             </div>
 
             <div class="mb-5">
