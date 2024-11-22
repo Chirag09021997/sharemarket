@@ -11,6 +11,7 @@ const futuresController = require("../controller/futuresController");
 const etfsController = require("../controller/etfsController");
 const fundsController = require("../controller/fundsController");
 const bondsController = require("../controller/bondsController");
+const cryptoCurrencyController = require("../controller/cryptoCurrencyController");
 const settingController = require("../controller/settingController");
 /* GET home page. */
 router.get("/", authCheck, (req, res) => {
@@ -31,7 +32,7 @@ router.post("/indics/overview/:id", authCheck, indicsController.changeOverview);
 router.get("/currencies", authCheck, currenciesController.index);
 router.get("/commodities", authCheck, commoditiesController.index);
 router.get("/stock", authCheck, stockController.index);
-router.get("/cryptocurrency", authCheck, stockController.index);
+router.get("/cryptocurrency", authCheck, cryptoCurrencyController.index);
 router.get("/futures", authCheck, futuresController.index);
 router.get("/etfs", authCheck, etfsController.index);
 router.get("/funds", authCheck, fundsController.index);
