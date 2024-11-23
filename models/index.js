@@ -27,4 +27,5 @@ db.Sequelize = Sequelize;
 
 db.admins = require("./admin.model")(sequelize, Sequelize, DataTypes);
 db.market = require("./market.model")(sequelize, Sequelize, DataTypes);
+db.category = require("./category.model")(sequelize, Sequelize, DataTypes);
 module.exports = db;

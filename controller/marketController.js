@@ -60,7 +60,7 @@ const saveMarket = async (method, req, res, id = null) => {
       where: symbolCondition,
     });
 
-    if (existingMarket) {
+    if (existingMarket && method === "create") {
       return renderPage(req, res, `market/${method}`, {
         title: `${method === "create" ? "Create" : "Edit"} Market`,
         activePage: "market",
@@ -143,7 +143,7 @@ const renderFormPage = (req, res, view, pageTitle, id = null) =>
   commonService
     .get(MarketModel, { where: { id } })
     .then((detail) => {
-      if (id && !detail) return res.redirect("/market");    
+      if (id && !detail) return res.redirect("/market");
       renderPage(req, res, view, {
         title: pageTitle,
         activePage: "market",

@@ -27,6 +27,8 @@ router.get("/logout", authCheck, authController.logout);
 
 router.get("/dashboard", authCheck, dashBoardController.dashboard);
 router.use("/market", authCheck, require("./market"));
+router.use("/category", authCheck, require("./category"));
+
 router.get("/indics", authCheck, indicsController.index);
 router.post("/indics/overview/:id", authCheck, indicsController.changeOverview);
 router.get("/currencies", authCheck, currenciesController.index);
