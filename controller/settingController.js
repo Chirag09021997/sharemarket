@@ -58,7 +58,7 @@ const update = async (req, res) => {
       settings.crumb = crumb;
       settings.cookie = cookie;
 
-      console.log("Updated settings data:", settings);
+      // console.log("Updated settings data:", settings);
 
       // Write the updated settings back to the file
       fs.writeFile(

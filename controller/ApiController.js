@@ -23,12 +23,21 @@ const getAll = async (req, res) => {
       ],
     });
     const modifiedMarkets = markets.map((market) => {
-      const { image, image_url } = market.dataValues;
+      const { image, image_url, response } = market.dataValues;
       const finalImage = image && image.length > 0 ? image : image_url;
       delete market.dataValues.image_url;
+      let responseData = response;
+      if (typeof responseData === "string") {
+        try {
+          responseData = JSON.parse(responseData);
+        } catch (err) {
+          console.error(`Error parsing response for symbol ${symbol}:`, err);
+        }
+      }
       return {
         ...market.dataValues,
         image: finalImage,
+        response:responseData
       };
     });
     res.json({
@@ -64,15 +73,24 @@ const getSingle = async (req, res) => {
         message: "Market not found.",
       });
     }
-    const { image, image_url } = market.dataValues;
+    const { image, image_url, response } = market.dataValues;
     let finalImage = image && image.length > 0 ? image : image_url;
     delete market.dataValues.image_url;
+    let responseData = response;
+    if (typeof responseData === "string") {
+      try {
+        responseData = JSON.parse(responseData);
+      } catch (err) {
+        console.error(`Error parsing response for symbol ${symbol}:`, err);
+      }
+    }
     res.json({
       status: true,
       message: "Get single market record successFully.",
       data: {
         ...market.dataValues,
         image: finalImage,
+        response: responseData,
       },
     });
   } catch (error) {
@@ -327,14 +345,29 @@ const updateAPILastFlag = (newFlagValue) => {
 const updateMarketData = async (req, res) => {
   const { response } = req.body;
   const BATCH_SIZE = 19;
+
   try {
-    if (Array.isArray(response) && response?.length > 0) {
+    if (Array.isArray(response) && response.length > 0) {
       for (const item of response) {
         const symbol = item.symbol;
-        await commonService.update(
-          MarketModel,
-          { where: { symbol } },
-          { response: item.response[0] }
+        let responseData = item.response[0];
+        if (typeof responseData === "string") {
+          try {
+            responseData = JSON.parse(responseData);
+          } catch (err) {
+            console.error(`Error parsing response for symbol ${symbol}:`, err);
+            continue;
+          }
+        } else if (typeof responseData !== "object") {
+          console.error(`Invalid response data format for symbol ${symbol}`);
+          continue;
+        }
+        // if (typeof responseData === "object") {
+        //   responseData = JSON.stringify(responseData);
+        // }
+        await MarketModel.update(
+          { response: responseData },
+          { where: { symbol } }
         );
       }
       let apiLast = settingJson?.api_last || 0;
@@ -354,7 +387,7 @@ const updateMarketData = async (req, res) => {
       }
       res.json({
         status: true,
-        message: `Market record update successfully.`,
+        message: `Market record updated successfully.`,
         data: { symbols: stringSymbols },
       });
     } else {
@@ -363,7 +396,7 @@ const updateMarketData = async (req, res) => {
         .json({ status: false, error: "Market record not found." });
     }
   } catch (error) {
-    console.error(`Error fetching update market data:`, error);
+    console.error("Error updating market data:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
