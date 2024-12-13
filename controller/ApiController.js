@@ -545,7 +545,9 @@ const newsSingle = async (req, res) => {
       ],
       where: { id },
     });
-
+    if (!getData) {
+      res.status(400).json({ error: "record not found." });
+    }
     res.json({
       status: true,
       message: "Get news record successfully.",
