@@ -32,7 +32,7 @@ const db = require("./models");
 // create table in database start.
 const synchronizeAndSeed = async () => {
   try {
-    await db.sequelize.sync({ force: true });
+    // await db.sequelize.sync({ force: true });
     // await db.sequelize.sync();
   } catch (error) {
     console.error("Error during synchronization and seeding:", error);

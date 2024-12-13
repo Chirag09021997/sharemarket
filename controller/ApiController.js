@@ -1,4 +1,8 @@
-const { market: MarketModel } = require("../models/index");
+const {
+  market: MarketModel,
+  news: NewsModel,
+  category: CategoryModel,
+} = require("../models/index");
 const fs = require("fs");
 const { symbol } = require("joi");
 const path = require("path");
@@ -6,6 +10,7 @@ const { Op, Sequelize } = require("sequelize");
 const sectorJson = require("../json/sector.json");
 const settingJson = require("../json/setting.json");
 const { commonService } = require("../services/index");
+const { BASE_URL } = process.env;
 
 const getAll = async (req, res) => {
   try {
@@ -37,7 +42,7 @@ const getAll = async (req, res) => {
       return {
         ...market.dataValues,
         image: finalImage,
-        response:responseData
+        response: responseData,
       };
     });
     res.json({
@@ -467,6 +472,91 @@ const searchMarket = async (req, res) => {
   }
 };
 
+const newsAll = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 25;
+  const offset = (page - 1) * limit;
+  try {
+    const count = await NewsModel.count();
+    const getData = await NewsModel.findAll({
+      limit: limit,
+      offset: offset,
+      order: [["created_at", "DESC"]],
+      attributes: [
+        "id",
+        "category_id",
+        "title",
+        "url",
+        "desc",
+        "created_at",
+        [
+          Sequelize.literal(`CONCAT('${BASE_URL}', '/images/', image)`),
+          "image",
+        ],
+      ],
+      include: [
+        {
+          model: CategoryModel,
+          as: "categories",
+          attributes: ["name"],
+        },
+      ],
+    });
+
+    res.json({
+      status: true,
+      message: "Get news all record successfully.",
+      data: getData,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(count / limit),
+        totalCount: count,
+        limit,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching news data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const newsSingle = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const getData = await NewsModel.findOne({
+      attributes: [
+        "id",
+        "category_id",
+        "title",
+        "url",
+        "desc",
+        "created_at",
+        [
+          Sequelize.literal(`CONCAT('${BASE_URL}', '/images/', image)`),
+          "image",
+        ],
+      ],
+      include: [
+        {
+          model: CategoryModel,
+          as: "categories",
+          attributes: ["name"],
+        },
+      ],
+      where: { id },
+    });
+
+    res.json({
+      status: true,
+      message: "Get news record successfully.",
+      data: getData,
+    });
+  } catch (error) {
+    console.error("Error fetching news data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   getAll,
   getSingle,
@@ -476,4 +566,6 @@ module.exports = {
   overViewList,
   updateMarketData,
   searchMarket,
+  newsAll,
+  newsSingle,
 };

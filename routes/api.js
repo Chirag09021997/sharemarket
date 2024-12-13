@@ -15,4 +15,7 @@ router.post("/get-stocks-subtypes", ApiController.getStockSubtypes);
 router.post("/overview", ApiController.overViewList);
 router.post("/update-market", ApiController.updateMarketData);
 router.post("/market-search", ApiController.searchMarket);
+router.post("/user-category", ApiController.searchMarket);
+router.post("/news", ApiController.newsAll);
+router.post("/news/:id", ApiController.newsSingle);
 module.exports = router;

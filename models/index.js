@@ -28,4 +28,8 @@ db.Sequelize = Sequelize;
 db.admins = require("./admin.model")(sequelize, Sequelize, DataTypes);
 db.market = require("./market.model")(sequelize, Sequelize, DataTypes);
 db.category = require("./category.model")(sequelize, Sequelize, DataTypes);
+db.news = require("./news.model")(sequelize, Sequelize, DataTypes);
+
+// relationShip
+db.news.belongsTo(db.category, { foreignKey: "category_id", as: "categories" });
 module.exports = db;

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('../partials/head',{title:title}) %>
+    <link href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/38.0.1/classic/ckeditor.js"></script>
+    <style>
+      .ck-editor__editable {
+        min-height: 300px;
+      }
+
+      .ck-content h1 {
+        font-size: 24px;
+        font-weight: bold;
+      }
+
+      .ck-content h2 {
+        font-size: 20px;
+        font-weight: bold;
+      }
+    </style>
+</head>
+
+<body>
+  <%- include('../partials/navbar') %> <%- include('../partials/sidebar') %>
+      <div class="sm:p-4 p-1 sm:ml-64 mt-6">
+        <section class="p-3 sm:p-5">
+          <div class="bg-white shadow-md sm:rounded-lg mx-auto p-4 my-5">
+            <div class="flex justify-between items-center">
+              <h1 class="text-xl font-bold">
+                <a href="/news">
+                  <i class="fa fa-arrow-left text-white bg-black p-2 rounded-full" aria-hidden="true"></i>
+                </a>
+                <span class="mx-3">News Show</span>
+              </h1>
+            </div>
+          </div>
+
+          <div class="bg-white shadow-md sm:rounded-lg mx-auto p-4 my-5">
+            <div class="mb-5">
+              <label for="category_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category
+                Name :</label>
+              <input type="text" id="category_id" name="category_id"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                value="<%= formData?.categories?.name %>" disabled />
+            </div>
+            <div class="mb-5">
+              <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title :</label>
+              <input type="text" id="title" name="title"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="TYX" value="<%= formData?.title %>" disabled />
+            </div>
+            <div class="mb-5">
+              <label for="url" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">URL :</label>
+              <input type="text" id="url" name="url"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="TYX" value="<%= formData?.url %>" disabled />
+            </div>
+            <div class="mb-5">
+              <label for="desc" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Desc :</label>
+              <textarea name="desc" id="desc"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"><%= formData?.desc %></textarea>
+            </div>
+            <div class="mb-5">
+              <label for="image" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Image :</label>
+              <img src="<%= formData?.image %>" alt="img" class="w-18 h-18">
+            </div>
+          </div>
+        </section>
+      </div>
+      <script>
+        ClassicEditor
+          .create(document.querySelector('#desc'), {
+            height: 800,
+            toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
+            heading: {
+              options: [
+                { model: 'paragraph', title: 'Normal', class: 'ck-heading_paragraph' },
+                { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
+              ]
+            }
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      </script>
+
+</body>
+
+</html>
