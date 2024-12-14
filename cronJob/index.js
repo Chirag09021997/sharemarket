@@ -45,10 +45,28 @@ const updateCronLastFlag = (newFlagValue) => {
 //         const results = response.data.spark.result;
 //         for (const item of results) {
 //           const symbol = item.symbol;
+//           let responseData = item.response[0];
+//           if (typeof responseData === "string") {
+//             try {
+//               responseData = JSON.parse(responseData);
+//             } catch (err) {
+//               console.error(
+//                 `Error parsing response for symbol ${symbol}:`,
+//                 err
+//               );
+//               continue;
+//             }
+//           } else if (typeof responseData !== "object") {
+//             console.error(`Invalid response data format for symbol ${symbol}`);
+//             continue;
+//           }
+//           if (typeof responseData === "object") {
+//             responseData = JSON.stringify(responseData);
+//           }
 //           await commonService.update(
 //             MarketModel,
 //             { where: { symbol } },
-//             { response: item.response[0] }
+//             { response: responseData }
 //           );
 //         }
 //         updateCronLastFlag(++cronLast);
@@ -63,9 +81,9 @@ const updateCronLastFlag = (newFlagValue) => {
 //   }
 // });
 
-// 10-minute cron job
-cron.schedule("*/10 * * * *", async () => {
-  console.log(`cron job 10 minutes ... Time ::  ${Date()}`);
+// hourly cron job
+cron.schedule("0 * * * *", async () => {
+  console.log(`cron job hourly ... Time ::  ${Date()}`);
   try {
     const baseURL = "https://query1.finance.yahoo.com/v1/finance/sectors";
     const params = {
