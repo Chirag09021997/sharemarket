@@ -29,6 +29,8 @@ const getAll = async (req, res) => {
         "regular_market_price",
         "previous_close",
         "market_type",
+        "regular_market_day_high",
+        "regular_market_day_low",
       ],
     });
     const modifiedMarkets = markets.map((market) => {
@@ -77,6 +79,8 @@ const getSingle = async (req, res) => {
         "regular_market_price",
         "previous_close",
         "market_type",
+        "regular_market_day_high",
+        "regular_market_day_low",
       ],
       where: { id },
     });
@@ -140,6 +144,8 @@ const multipleCreate = async (req, res) => {
           regular_market_price: record.regular_market_price || 0,
           previous_close: record.previous_close || 0,
           market_type: record.market_type || "None",
+          regular_market_day_high: record.regular_market_day_high || 0,
+          regular_market_day_low: record.regular_market_day_low || 0,
         });
       });
     }
@@ -180,6 +186,8 @@ const getStocks = async (req, res) => {
         "regular_market_price",
         "previous_close",
         "market_type",
+        "regular_market_day_high",
+        "regular_market_day_low",
       ],
       where: {
         type,
@@ -256,6 +264,8 @@ const getStockSubtypes = async (req, res) => {
         "regular_market_price",
         "previous_close",
         "market_type",
+        "regular_market_day_high",
+        "regular_market_day_low",
       ],
       where: {
         type,
@@ -329,6 +339,8 @@ const overViewList = async (req, res) => {
         "regular_market_price",
         "previous_close",
         "market_type",
+        "regular_market_day_high",
+        "regular_market_day_low",
       ],
       where: {
         type: "indics",
@@ -366,6 +378,8 @@ const overViewList = async (req, res) => {
         "regular_market_price",
         "previous_close",
         "market_type",
+        "regular_market_day_high",
+        "regular_market_day_low",
         [
           Sequelize.literal(
             "CAST(regular_market_price AS FLOAT) - CAST(previous_close AS FLOAT)"
@@ -405,6 +419,8 @@ const overViewList = async (req, res) => {
         "regular_market_price",
         "previous_close",
         "market_type",
+        "regular_market_day_high",
+        "regular_market_day_low",
         [
           Sequelize.literal(
             "CAST(regular_market_price AS FLOAT) - CAST(previous_close AS FLOAT)"
@@ -427,6 +443,57 @@ const overViewList = async (req, res) => {
         ],
       ],
       limit: 5,
+    });
+
+    const topMovers = await MarketModel.findAll({
+      attributes: [
+        "id",
+        "symbol",
+        "image",
+        "image_url",
+        "response",
+        "country",
+        "industry",
+        "type",
+        "subtype",
+        "name",
+        "regular_market_price",
+        "previous_close",
+        "market_type",
+        "regular_market_day_high",
+        "regular_market_day_low",
+        [
+          Sequelize.literal(
+            "(regular_market_day_high - regular_market_day_low) / regular_market_day_low * 100"
+          ),
+          "move_per",
+        ],
+      ],
+      where: {
+        type: "indics",
+        overview: "active",
+        subtype: { [Op.in]: possibleSubtypes },
+        market_type: market_type,
+      },
+      order: [
+        [
+          Sequelize.literal(
+            "(regular_market_day_high - regular_market_day_low) / regular_market_day_low * 100"
+          ),
+          "DESC",
+        ],
+      ],
+      limit: 5,
+    });
+
+    organizedData.topMovers = topMovers.map((item) => {
+      const { image, image_url } = item.dataValues;
+      const finalImage = image && image.length > 0 ? image : image_url;
+      delete item.dataValues.image_url;
+      return {
+        ...item.dataValues,
+        image: finalImage,
+      };
     });
 
     organizedData.topGainers = topGainers.map((item) => {
@@ -500,6 +567,10 @@ const updateMarketData = async (req, res) => {
             regular_market_price:
               parseFloat(responseData?.meta?.regularMarketPrice) || 0,
             previous_close: parseFloat(responseData?.meta?.previousClose) || 0,
+            regular_market_day_high:
+              parseFloat(responseData?.meta?.regularMarketDayHigh) || 0,
+            regular_market_day_low:
+              parseFloat(responseData?.meta?.regularMarketDayLow) || 0,
           },
           { where: { symbol } }
         );
@@ -591,6 +662,8 @@ const searchMarket = async (req, res) => {
           "regular_market_price",
           "previous_close",
           "market_type",
+          "regular_market_day_high",
+          "regular_market_day_low",
         ],
         offset: (pageNumber - 1) * limitNumber,
         limit: limitNumber,

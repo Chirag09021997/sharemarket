@@ -73,6 +73,14 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
         type: DataTypes.DECIMAL(10, 2),
         defaultValue: 0,
       },
+      regular_market_day_high: {
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 0,
+      },
+      regular_market_day_low: {
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 0,
+      },
       status: {
         type: DataTypes.ENUM("active", "inactive"),
         defaultValue: "active",

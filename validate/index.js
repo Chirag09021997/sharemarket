@@ -40,6 +40,8 @@ const marketValidate = Joi.object({
   market_type: Joi.string().required().valid("US", "EU", "ASIA", "None"),
   regular_market_price: Joi.number().optional().allow(0).min(0),
   previous_close: Joi.number().optional().allow(0).min(0),
+  regular_market_day_high: Joi.number().optional().allow(0).min(0),
+  regular_market_day_low: Joi.number().optional().allow(0).min(0),
 });
 
 const categoryValidate = Joi.object({
