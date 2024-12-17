@@ -351,7 +351,7 @@ const overViewList = async (req, res) => {
       return acc;
     }, Object.fromEntries(possibleSubtypes.map((subtype) => [subtype, []])));
 
-    const topMover = await MarketModel.findAll({
+    const topGainers = await MarketModel.findAll({
       attributes: [
         "id",
         "symbol",
@@ -390,7 +390,7 @@ const overViewList = async (req, res) => {
       limit: 5,
     });
 
-    const topLoser = await MarketModel.findAll({
+    const topLosers = await MarketModel.findAll({
       attributes: [
         "id",
         "symbol",
@@ -429,7 +429,7 @@ const overViewList = async (req, res) => {
       limit: 5,
     });
 
-    organizedData.topMover = topMover.map((item) => {
+    organizedData.topGainers = topGainers.map((item) => {
       const { image, image_url } = item.dataValues;
       const finalImage = image && image.length > 0 ? image : image_url;
       delete item.dataValues.image_url;
@@ -439,7 +439,7 @@ const overViewList = async (req, res) => {
       };
     });
 
-    organizedData.topLoser = topLoser.map((item) => {
+    organizedData.topLosers = topLosers.map((item) => {
       const { image, image_url } = item.dataValues;
       const finalImage = image && image.length > 0 ? image : image_url;
       delete item.dataValues.image_url;
