@@ -17,6 +17,11 @@ const index = async (req, res) => {
         "type",
         "subtype",
         "overview",
+        "name",
+        "market_type",
+        "regular_market_price",
+        "previous_close",
+        "status",
       ],
       order: [["created_at", "DESC"]],
       where: {

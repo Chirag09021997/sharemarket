@@ -35,15 +35,45 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
         type: DataTypes.JSON,
         defaultValue: {},
       },
-      type:{
-        type: DataTypes.ENUM('stock', 'indics', 'commodities', 'currencies', 'cryptocurrency', 'futures', 'etfs', 'funds', 'bonds'),
-        defaultValue:"stock"
+      type: {
+        type: DataTypes.ENUM(
+          "stock",
+          "indics",
+          "commodities",
+          "currencies",
+          "cryptocurrency",
+          "futures",
+          "etfs",
+          "funds",
+          "bonds"
+        ),
+        defaultValue: "stock",
       },
       subtype: {
         type: DataTypes.STRING(1000),
         allowNull: true,
       },
       overview: {
+        type: DataTypes.ENUM("active", "inactive"),
+        defaultValue: "active",
+      },
+      name: {
+        type: DataTypes.STRING(1000),
+        allowNull: true,
+      },
+      market_type: {
+        type: DataTypes.ENUM("US", "EU", "ASIA", "None"),
+        defaultValue: "None",
+      },
+      regular_market_price: {
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 0,
+      },
+      previous_close: {
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 0,
+      },
+      status: {
         type: DataTypes.ENUM("active", "inactive"),
         defaultValue: "active",
       },

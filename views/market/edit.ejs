@@ -174,6 +174,74 @@
               <p class="text-red-500"><%= errors?.subtype %></p>
             </div>
 
+            <div class="mb-5">
+              <label
+                for="name"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Name :</label
+              >
+              <input
+                type="text"
+                id="name"
+                name="name"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Enter name"
+                value="<%= formData?.name %>"
+                required
+              />
+              <p class="text-red-500"><%= errors?.name %></p>
+            </div>
+            
+            <div class="mb-5">
+              <label
+                for="market_type"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Market Type :</label
+              >
+              <select id="market_type" name="market_type"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <option value="None" <%=formData?.market_type=='None' ? 'selected' : '' %>>None</option>
+                <option value="US" <%=formData?.market_type=='US' ? 'selected' : '' %>>US</option>
+                <option value="EU" <%=formData?.market_type=='EU' ? 'selected' : '' %>>EU</option>
+                <option value="ASIA" <%=formData?.market_type=='ASIA' ? 'selected' : '' %>>ASIA</option>
+              </select>
+              <p class="text-red-500"><%= errors?.market_type %></p>
+            </div>
+
+            <div class="mb-5">
+              <label
+                for="regular_market_price"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Regular Market Price :</label
+              >
+              <input
+                type="number"
+                id="regular_market_price"
+                name="regular_market_price"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Enter regular market price"
+                value="<%= formData?.regular_market_price ?? 0 %>"
+                required
+              />
+              <p class="text-red-500"><%= errors?.regular_market_price %></p>
+            </div>
+
+            <div class="mb-5">
+              <label
+                for="previous_close"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Previous Close Price :</label
+              >
+              <input
+                type="number"
+                id="previous_close"
+                name="previous_close"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Enter regular market price"
+                value="<%= formData?.previous_close ?? 0 %>"
+              />
+              <p class="text-red-500"><%= errors?.previous_close %></p>
+            </div>
             <button
               type="submit"
               class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"

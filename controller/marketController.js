@@ -33,7 +33,18 @@ const handleImageDeletion = (image) => {
 
 // Reusable function for creating or updating a market
 const saveMarket = async (method, req, res, id = null) => {
-  const { image_url, symbol, country, industry, type, subtype } = req.body;
+  const {
+    image_url,
+    symbol,
+    country,
+    industry,
+    type,
+    subtype,
+    name,
+    market_type,
+    regular_market_price,
+    previous_close,
+  } = req.body;
   const image = req?.file?.filename;
 
   // Validate input data
@@ -76,6 +87,10 @@ const saveMarket = async (method, req, res, id = null) => {
       industry,
       type,
       subtype,
+      name,
+      market_type,
+      regular_market_price,
+      previous_close,
     };
 
     if (image) {
@@ -118,6 +133,11 @@ const index = async (req, res) => {
         "response",
         "type",
         "subtype",
+        "name",
+        "market_type",
+        "regular_market_price",
+        "previous_close",
+        "status",
       ],
       order: [["created_at", "DESC"]],
       limit: limit,
@@ -165,6 +185,38 @@ const removeImage = async (req, res) => {
   }
 };
 
+const changeStatus = async (req, res) => {
+  const marketId = req?.params?.id;
+  if (marketId) {
+    const detail = await commonService.get(MarketModel, {
+      where: { id: marketId },
+      attributes: ["status"],
+    });
+    let status;
+    if (detail.status == "active") {
+      status = "inactive";
+    } else {
+      status = "active";
+    }
+    try {
+      const updateDetail = await commonService.update(
+        MarketModel,
+        { where: { id: marketId } },
+        { status }
+      );
+      if (updateDetail) {
+        res.send({ success: true });
+      } else {
+        res.status(500).render("error", { error: "Internal Server Error" });
+      }
+    } catch (error) {
+      res.status(500).render("error", { error: "Internal Server Error" });
+    }
+  } else {
+    res.status(500).render("error", { error: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   index,
   create: (req, res) =>
@@ -177,4 +229,5 @@ module.exports = {
   update: (req, res) => saveMarket("edit", req, res, req.params.id),
   deleteRecord: (req, res) => cmDeleteRecord(req, res, MarketModel),
   removeImage,
+  changeStatus,
 };

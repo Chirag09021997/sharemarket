@@ -5,6 +5,7 @@ const { upload } = require("../services/fileUpload");
 
 router.get("/", marketController.index);
 router.get("/create", marketController.create);
+router.post("/change-status/:id", marketController.changeStatus);
 router.post("/store", upload.single("image"), marketController.store);
 router.get("/:id", marketController.show);
 router.get("/:id/edit", marketController.edit);

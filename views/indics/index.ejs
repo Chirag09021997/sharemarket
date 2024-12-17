@@ -77,6 +77,7 @@
                   <th>Type</th>
                   <th>Response</th>
                   <th>Overview</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -127,11 +128,15 @@
                         <input type="checkbox" onclick="overviewChange(this)" data-id="<%= data.id %>"
                           <%=data.overview=='active' ? 'checked' : '' %> />
                       </td>
+                      <td class="text-center">
+                        <input type="checkbox" data-value="<%= data.status %>" data-id="<%= data.id %>" class="switch"
+                          <%=(data?.status=='active' )?'checked':'' %>>
+                      </td>
                     </tr>
                     <% }) %>
                       <% } else { %>
                         <tr>
-                          <td colspan="7" class="text-center">No data available</td>
+                          <td colspan="10" class="text-center">No data available</td>
                         </tr>
                         <% } %>
               </tbody>

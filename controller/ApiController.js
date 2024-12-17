@@ -25,6 +25,10 @@ const getAll = async (req, res) => {
         "industry",
         "type",
         "subtype",
+        "name",
+        "regular_market_price",
+        "previous_close",
+        "market_type",
       ],
     });
     const modifiedMarkets = markets.map((market) => {
@@ -69,6 +73,10 @@ const getSingle = async (req, res) => {
         "industry",
         "type",
         "subtype",
+        "name",
+        "regular_market_price",
+        "previous_close",
+        "market_type",
       ],
       where: { id },
     });
@@ -128,6 +136,10 @@ const multipleCreate = async (req, res) => {
           updated_at: Date.now(),
           type: record.type,
           subtype: record.subtype,
+          name: record.name || null,
+          regular_market_price: record.regular_market_price || 0,
+          previous_close: record.previous_close || 0,
+          market_type: record.market_type || "None",
         });
       });
     }
@@ -164,6 +176,10 @@ const getStocks = async (req, res) => {
         "industry",
         "type",
         "subtype",
+        "name",
+        "regular_market_price",
+        "previous_close",
+        "market_type",
       ],
       where: {
         type,
@@ -236,6 +252,10 @@ const getStockSubtypes = async (req, res) => {
         "industry",
         "type",
         "subtype",
+        "name",
+        "regular_market_price",
+        "previous_close",
+        "market_type",
       ],
       where: {
         type,
@@ -270,6 +290,7 @@ const getStockSubtypes = async (req, res) => {
 };
 
 const overViewList = async (req, res) => {
+  const { market_type = "None" } = req.body;
   const BATCH_SIZE = 19;
   try {
     const possibleSubtypes = [
@@ -304,6 +325,10 @@ const overViewList = async (req, res) => {
         "industry",
         "type",
         "subtype",
+        "name",
+        "regular_market_price",
+        "previous_close",
+        "market_type",
       ],
       where: {
         type: "indics",
@@ -325,6 +350,104 @@ const overViewList = async (req, res) => {
       if (acc[key]) acc[key].push(item);
       return acc;
     }, Object.fromEntries(possibleSubtypes.map((subtype) => [subtype, []])));
+
+    const topMover = await MarketModel.findAll({
+      attributes: [
+        "id",
+        "symbol",
+        "image",
+        "image_url",
+        "response",
+        "country",
+        "industry",
+        "type",
+        "subtype",
+        "name",
+        "regular_market_price",
+        "previous_close",
+        "market_type",
+        [
+          Sequelize.literal(
+            "CAST(regular_market_price AS FLOAT) - CAST(previous_close AS FLOAT)"
+          ),
+          "price_difference",
+        ],
+      ],
+      where: {
+        type: "indics",
+        overview: "active",
+        subtype: { [Op.in]: possibleSubtypes },
+        market_type: market_type,
+      },
+      order: [
+        [
+          Sequelize.literal(
+            "CAST(regular_market_price AS FLOAT) - CAST(previous_close AS FLOAT)"
+          ),
+          "DESC",
+        ],
+      ],
+      limit: 5,
+    });
+
+    const topLoser = await MarketModel.findAll({
+      attributes: [
+        "id",
+        "symbol",
+        "image",
+        "image_url",
+        "response",
+        "country",
+        "industry",
+        "type",
+        "subtype",
+        "name",
+        "regular_market_price",
+        "previous_close",
+        "market_type",
+        [
+          Sequelize.literal(
+            "CAST(regular_market_price AS FLOAT) - CAST(previous_close AS FLOAT)"
+          ),
+          "price_difference",
+        ],
+      ],
+      where: {
+        type: "indics",
+        overview: "active",
+        subtype: { [Op.in]: possibleSubtypes },
+        market_type: market_type,
+      },
+      order: [
+        [
+          Sequelize.literal(
+            "CAST(regular_market_price AS FLOAT) - CAST(previous_close AS FLOAT)"
+          ),
+          "ASC",
+        ],
+      ],
+      limit: 5,
+    });
+
+    organizedData.topMover = topMover.map((item) => {
+      const { image, image_url } = item.dataValues;
+      const finalImage = image && image.length > 0 ? image : image_url;
+      delete item.dataValues.image_url;
+      return {
+        ...item.dataValues,
+        image: finalImage,
+      };
+    });
+
+    organizedData.topLoser = topLoser.map((item) => {
+      const { image, image_url } = item.dataValues;
+      const finalImage = image && image.length > 0 ? image : image_url;
+      delete item.dataValues.image_url;
+      return {
+        ...item.dataValues,
+        image: finalImage,
+      };
+    });
     organizedData.sector = sectorJson;
     organizedData.symbols = stringSymbols;
     res.json({
@@ -348,7 +471,7 @@ const updateAPILastFlag = (newFlagValue) => {
 };
 
 const updateMarketData = async (req, res) => {
-  const { response } = req.body;
+  const { response, unavailable_symbol } = req.body;
   const BATCH_SIZE = 19;
 
   try {
@@ -371,10 +494,25 @@ const updateMarketData = async (req, res) => {
         //   responseData = JSON.stringify(responseData);
         // }
         await MarketModel.update(
-          { response: responseData },
+          {
+            response: responseData,
+            name: responseData?.meta?.longName || null,
+            regular_market_price:
+              parseFloat(responseData?.meta?.regularMarketPrice) || 0,
+            previous_close: parseFloat(responseData?.meta?.previousClose) || 0,
+          },
           { where: { symbol } }
         );
       }
+
+      if (unavailable_symbol) {
+        const unavailableSymbols = unavailable_symbol.split(",");
+        await MarketModel.update(
+          { status: "inactive" },
+          { where: { symbol: unavailableSymbols } }
+        );
+      }
+
       let apiLast = settingJson?.api_last || 0;
       const offset = apiLast * BATCH_SIZE;
       const market = await MarketModel.findAll({
@@ -423,6 +561,16 @@ const searchMarket = async (req, res) => {
           "LIKE",
           `%${search.toLowerCase()}%`
         ),
+        Sequelize.where(
+          Sequelize.fn("LOWER", Sequelize.col("name")),
+          "LIKE",
+          `%${search.toLowerCase()}%`
+        ),
+        Sequelize.where(
+          Sequelize.fn("LOWER", Sequelize.col("market_type")),
+          "LIKE",
+          `%${search.toLowerCase()}%`
+        ),
       ],
     };
 
@@ -439,6 +587,10 @@ const searchMarket = async (req, res) => {
           "industry",
           "type",
           "subtype",
+          "name",
+          "regular_market_price",
+          "previous_close",
+          "market_type",
         ],
         offset: (pageNumber - 1) * limitNumber,
         limit: limitNumber,
