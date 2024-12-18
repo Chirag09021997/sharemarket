@@ -62,7 +62,7 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
         allowNull: true,
       },
       market_type: {
-        type: DataTypes.ENUM("US", "EU", "ASIA", "None"),
+        type: DataTypes.ENUM("US", "EU", "ASIA", "AU", "None"),
         defaultValue: "None",
       },
       regular_market_price: {

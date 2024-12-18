@@ -37,7 +37,7 @@ const marketValidate = Joi.object({
     ),
   subtype: Joi.string().optional().allow(""),
   name: Joi.string().optional().allow(""),
-  market_type: Joi.string().required().valid("US", "EU", "ASIA", "None"),
+  market_type: Joi.string().required().valid("US", "EU", "ASIA", "AU", "None"),
   regular_market_price: Joi.number().optional().allow(0).min(0),
   previous_close: Joi.number().optional().allow(0).min(0),
   regular_market_day_high: Joi.number().optional().allow(0).min(0),
@@ -48,9 +48,18 @@ const categoryValidate = Joi.object({
   name: Joi.string().required(),
 });
 
+const userTrackingValidate = Joi.object({
+  device_id: Joi.string().required(),
+  promotion_type: Joi.string().optional().valid("organic", "paid", "none"),
+  country_name: Joi.string().optional(),
+  state_name: Joi.string().optional(),
+  city_name: Joi.string().optional(),
+});
+
 module.exports = {
   registerValidate,
   loginValidate,
   marketValidate,
   categoryValidate,
+  userTrackingValidate,
 };

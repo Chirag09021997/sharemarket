@@ -13,6 +13,7 @@ const fundsController = require("../controller/fundsController");
 const bondsController = require("../controller/bondsController");
 const cryptoCurrencyController = require("../controller/cryptoCurrencyController");
 const settingController = require("../controller/settingController");
+const trackingController = require("../controller/trackingController");
 /* GET home page. */
 router.get("/", authCheck, (req, res) => {
   res.redirect("/dashboard");
@@ -42,4 +43,5 @@ router.get("/funds", authCheck, fundsController.index);
 router.get("/bonds", authCheck, bondsController.index);
 router.get("/setting", authCheck, settingController.index);
 router.post("/setting", authCheck, settingController.update);
+router.get("/tracking", authCheck, trackingController.index);
 module.exports = router;

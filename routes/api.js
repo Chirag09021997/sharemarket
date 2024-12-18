@@ -18,4 +18,5 @@ router.post("/market-search", ApiController.searchMarket);
 router.post("/user-category", ApiController.searchMarket);
 router.post("/news", ApiController.newsAll);
 router.post("/news/:id", ApiController.newsSingle);
+router.post("/user-tracking", ApiController.userTracking);
 module.exports = router;

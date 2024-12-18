@@ -2,6 +2,7 @@ const {
   market: MarketModel,
   news: NewsModel,
   category: CategoryModel,
+  tracking: UserTrackingModel,
 } = require("../models/index");
 const fs = require("fs");
 const { symbol } = require("joi");
@@ -10,6 +11,7 @@ const { Op, Sequelize } = require("sequelize");
 const sectorJson = require("../json/sector.json");
 const settingJson = require("../json/setting.json");
 const { commonService } = require("../services/index");
+const { userTrackingValidate } = require("../validate");
 const { BASE_URL } = process.env;
 
 const getAll = async (req, res) => {
@@ -307,6 +309,7 @@ const overViewList = async (req, res) => {
       "asia_pacific",
       "americas",
       "europe_middleeast_africa",
+      "australia",
     ];
     let apiLast = settingJson?.api_last || 0;
     const offset = apiLast * BATCH_SIZE;
@@ -617,11 +620,12 @@ const updateMarketData = async (req, res) => {
 
 const searchMarket = async (req, res) => {
   const { search = "", page = 1, limit = 25 } = req.query;
+  console.log("search =>", search);
   try {
     const pageNumber = Math.max(parseInt(page, 10), 1);
     const limitNumber = Math.max(parseInt(limit, 10), 25);
     const whereCondition = {
-      [Op.and]: [
+      [Op.or]: [
         Sequelize.where(
           Sequelize.fn("LOWER", Sequelize.col("symbol")),
           "LIKE",
@@ -784,6 +788,53 @@ const newsSingle = async (req, res) => {
   }
 };
 
+const userTracking = async (req, res) => {
+  const { error, value } = userTrackingValidate.validate(req.body, {
+    abortEarly: false,
+  });
+  if (error) {
+    res.status(400).json({ status: false, error: error.message });
+  }
+  try {
+    const { device_id } = value;
+    const existingRecord = await UserTrackingModel.findOne({
+      where: { device_id },
+      attributes: [
+        "id",
+        "device_id",
+        "promotion_type",
+        "country_name",
+        "state_name",
+        "city_name",
+        "total_open",
+        "status",
+      ],
+    });
+    if (existingRecord) {
+      existingRecord.total_open += 1;
+      await existingRecord.save();
+      res.json({
+        status: true,
+        message: "User tracking record updated successfully.",
+        data: existingRecord,
+      });
+    } else {
+      const data = await UserTrackingModel.create({
+        ...value,
+        total_open: 1,
+      });
+      res.json({
+        status: true,
+        message: "User tracking record created successfully.",
+        data,
+      });
+    }
+  } catch (error) {
+    console.error("Error creating user tracking record:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   getAll,
   getSingle,
@@ -795,4 +846,5 @@ module.exports = {
   searchMarket,
   newsAll,
   newsSingle,
+  userTracking,
 };
