@@ -56,10 +56,17 @@ const userTrackingValidate = Joi.object({
   city_name: Joi.string().optional(),
 });
 
+const feedBackValidate = Joi.object({
+  device_id: Joi.string().optional(),
+  title: Joi.string().required(),
+  description: Joi.string().required(),
+});
+
 module.exports = {
   registerValidate,
   loginValidate,
   marketValidate,
   categoryValidate,
   userTrackingValidate,
+  feedBackValidate,
 };

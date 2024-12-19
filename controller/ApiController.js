@@ -3,6 +3,7 @@ const {
   news: NewsModel,
   category: CategoryModel,
   tracking: UserTrackingModel,
+  feedback: FeedBackModal,
 } = require("../models/index");
 const fs = require("fs");
 const { symbol } = require("joi");
@@ -11,7 +12,7 @@ const { Op, Sequelize } = require("sequelize");
 const sectorJson = require("../json/sector.json");
 const settingJson = require("../json/setting.json");
 const { commonService } = require("../services/index");
-const { userTrackingValidate } = require("../validate");
+const { userTrackingValidate, feedBackValidate } = require("../validate");
 const { BASE_URL } = process.env;
 
 const getAll = async (req, res) => {
@@ -193,6 +194,7 @@ const getStocks = async (req, res) => {
       ],
       where: {
         type,
+        status: "active",
       },
     };
     if (country.length > 0) {
@@ -272,6 +274,7 @@ const getStockSubtypes = async (req, res) => {
       where: {
         type,
         subtype: { [Op.in]: subtypeArray },
+        status: "active",
       },
     });
 
@@ -347,24 +350,11 @@ const overViewList = async (req, res) => {
       ],
       where: {
         type: "indics",
+        status: "active",
         overview: "active",
         subtype: { [Op.in]: possibleSubtypes },
       },
     });
-    const modifiedMarkets = marketList.map((market) => {
-      const { image, image_url } = market.dataValues;
-      const finalImage = image && image.length > 0 ? image : image_url;
-      delete market.dataValues.image_url;
-      return {
-        ...market.dataValues,
-        image: finalImage,
-      };
-    });
-    const organizedData = modifiedMarkets.reduce((acc, item) => {
-      const key = item.subtype;
-      if (acc[key]) acc[key].push(item);
-      return acc;
-    }, Object.fromEntries(possibleSubtypes.map((subtype) => [subtype, []])));
 
     const topGainers = await MarketModel.findAll({
       attributes: [
@@ -391,10 +381,9 @@ const overViewList = async (req, res) => {
         ],
       ],
       where: {
-        type: "indics",
-        overview: "active",
-        subtype: { [Op.in]: possibleSubtypes },
         market_type: market_type,
+        type: "stock",
+        status: "active",
       },
       order: [
         [
@@ -404,7 +393,7 @@ const overViewList = async (req, res) => {
           "DESC",
         ],
       ],
-      limit: 5,
+      limit: 8,
     });
 
     const topLosers = await MarketModel.findAll({
@@ -432,10 +421,9 @@ const overViewList = async (req, res) => {
         ],
       ],
       where: {
-        type: "indics",
-        overview: "active",
-        subtype: { [Op.in]: possibleSubtypes },
         market_type: market_type,
+        type: "stock",
+        status: "active",
       },
       order: [
         [
@@ -445,7 +433,7 @@ const overViewList = async (req, res) => {
           "ASC",
         ],
       ],
-      limit: 5,
+      limit: 8,
     });
 
     const topMovers = await MarketModel.findAll({
@@ -473,10 +461,9 @@ const overViewList = async (req, res) => {
         ],
       ],
       where: {
-        type: "indics",
-        overview: "active",
-        subtype: { [Op.in]: possibleSubtypes },
         market_type: market_type,
+        type: "stock",
+        status: "active",
       },
       order: [
         [
@@ -486,8 +473,23 @@ const overViewList = async (req, res) => {
           "DESC",
         ],
       ],
-      limit: 5,
+      limit: 8,
     });
+
+    const modifiedMarkets = marketList.map((market) => {
+      const { image, image_url } = market.dataValues;
+      const finalImage = image && image.length > 0 ? image : image_url;
+      delete market.dataValues.image_url;
+      return {
+        ...market.dataValues,
+        image: finalImage,
+      };
+    });
+    const organizedData = modifiedMarkets.reduce((acc, item) => {
+      const key = item.subtype;
+      if (acc[key]) acc[key].push(item);
+      return acc;
+    }, Object.fromEntries(possibleSubtypes.map((subtype) => [subtype, []])));
 
     organizedData.topMovers = topMovers.map((item) => {
       const { image, image_url } = item.dataValues;
@@ -647,6 +649,7 @@ const searchMarket = async (req, res) => {
           `%${search.toLowerCase()}%`
         ),
       ],
+      status: "active",
     };
 
     const [market, totalCount] = await Promise.all([
@@ -835,6 +838,109 @@ const userTracking = async (req, res) => {
   }
 };
 
+const feedBack = async (req, res) => {
+  const image = req?.file?.filename;
+  console.log("image=>", image);
+  const { error, value } = feedBackValidate.validate(req.body, {
+    abortEarly: false,
+  });
+  if (error) {
+    res.status(400).json({ status: false, error: error.message });
+  }
+  try {
+    await FeedBackModal.create({
+      ...value,
+      image: image != "" ? `${BASE_URL}/images/${image}` : null,
+    });
+
+    res.json({
+      status: true,
+      message: "Feedback send successfully.",
+    });
+  } catch (error) {
+    console.error("Error creating user tracking record:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const getMarketData = async (topType, market_type, limit, offset) => {
+  const orderDirection =
+    topType === "gainers" ? "DESC" : topType === "losers" ? "ASC" : "DESC";
+  const priceDifferenceField =
+    topType === "movers"
+      ? "(regular_market_day_high - regular_market_day_low) / regular_market_day_low * 100"
+      : "CAST(regular_market_price AS FLOAT) - CAST(previous_close AS FLOAT)";
+
+  const orderField =
+    topType === "movers"
+      ? Sequelize.literal(priceDifferenceField)
+      : Sequelize.literal(
+          "CAST(regular_market_price AS FLOAT) - CAST(previous_close AS FLOAT)"
+        );
+
+  return await MarketModel.findAll({
+    attributes: [
+      "id",
+      "symbol",
+      "image",
+      "image_url",
+      "response",
+      "country",
+      "industry",
+      "type",
+      "subtype",
+      "name",
+      "regular_market_price",
+      "previous_close",
+      "market_type",
+      "regular_market_day_high",
+      "regular_market_day_low",
+      [orderField, "price_difference"],
+    ],
+    where: { market_type, type: "stock", status: "active" },
+    order: [[orderField, orderDirection]],
+    limit,
+    offset,
+  });
+};
+
+const getTopStocks = async (req, res) => {
+  // (type = "mover", "gainers", "losers)";
+  const {
+    market_type = "None",
+    page = 1,
+    limit = 10,
+    type = "gainers",
+  } = req.body;
+  const offset = (page - 1) * limit;
+  try {
+    const marketData = await getMarketData(type, market_type, limit, offset);
+    const totalRecords = await MarketModel.count({
+      where: { market_type, type: "stock", status: "active" },
+    });
+    let data = marketData.map((item) => {
+      const { image, image_url } = item.dataValues;
+      const finalImage = image && image.length > 0 ? image : image_url;
+      delete item.dataValues.image_url;
+      return {
+        ...item.dataValues,
+        image: finalImage,
+      };
+    });
+    res.json({
+      status: true,
+      message: "Get top shares successfully.",
+      data,
+      totalRecords,
+      page,
+      limit,
+    });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   getAll,
   getSingle,
@@ -847,4 +953,6 @@ module.exports = {
   newsAll,
   newsSingle,
   userTracking,
+  feedBack,
+  getTopStocks,
 };

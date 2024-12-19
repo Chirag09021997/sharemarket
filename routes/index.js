@@ -14,6 +14,7 @@ const bondsController = require("../controller/bondsController");
 const cryptoCurrencyController = require("../controller/cryptoCurrencyController");
 const settingController = require("../controller/settingController");
 const trackingController = require("../controller/trackingController");
+const feedbackController = require("../controller/feedbackController");
 /* GET home page. */
 router.get("/", authCheck, (req, res) => {
   res.redirect("/dashboard");
@@ -44,4 +45,5 @@ router.get("/bonds", authCheck, bondsController.index);
 router.get("/setting", authCheck, settingController.index);
 router.post("/setting", authCheck, settingController.update);
 router.get("/tracking", authCheck, trackingController.index);
+router.get("/feedback", authCheck, feedbackController.index);
 module.exports = router;

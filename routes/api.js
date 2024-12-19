@@ -19,4 +19,6 @@ router.post("/user-category", ApiController.searchMarket);
 router.post("/news", ApiController.newsAll);
 router.post("/news/:id", ApiController.newsSingle);
 router.post("/user-tracking", ApiController.userTracking);
+router.post("/feedback", upload.single("image"), ApiController.feedBack);
+router.post("/top-stocks", ApiController.getTopStocks);
 module.exports = router;
