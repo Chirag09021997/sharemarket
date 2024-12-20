@@ -1,19 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <%- include('partials/head',{title:title}) %>
-  </head>
 
-  <body>
-    <%- include('partials/navbar') %> <%- include('partials/sidebar') %>
-    <div class="p-4 sm:ml-64 mt-10">
-      <section class="p-3 sm:p-5">
-        <div class="shadow-md sm:rounded-lg mx-auto p-4 my-5">
-          <div class="flex justify-between items-center">
-            <h1 class="text-xl font-bold">Welcome</h1>
+<head>
+  <%- include('partials/head',{title:title}) %>
+</head>
+
+<body>
+  <%- include('partials/navbar') %> <%- include('partials/sidebar') %>
+      <div class="p-4 sm:ml-64 mt-10">
+        <section class="p-3 sm:p-5">
+          <div class="shadow-md sm:rounded-lg mx-auto p-4 my-5">
+            <div class="flex justify-between items-center">
+              <h1 class="text-xl font-bold">Welcome</h1>
+            </div>
           </div>
-        </div>
-      </section>
-    </div>
-  </body>
+        </section>
+        <section class="text-gray-700 body-font p-3">
+          <div class="container py-2 mx-auto">
+            <div class="flex flex-wrap -m-4 text-center">
+              <% if (getData && getData.length> 0) { %>
+                <% getData.forEach((data, index)=> { %>
+                  <div class="p-4 md:w-1/4 sm:w-1/2 w-full">
+                    <div
+                      class="border-2 border-gray-600 px-4 py-6 rounded-lg transform transition duration-500 hover:scale-95">
+                      <h2 class="title-font font-medium text-3xl text-gray-900">
+                        <%= data.count %>
+                      </h2>
+                      <p class="leading-relaxed">
+                        <%= data.type %>
+                      </p>
+                    </div>
+                  </div>
+                  <% }) } %>
+            </div>
+          </div>
+        </section>
+      </div>
+</body>
+
 </html>
