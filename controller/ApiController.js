@@ -867,12 +867,12 @@ const getMarketData = async (topType, market_type, limit, offset) => {
   const orderDirection =
     topType === "gainers" ? "DESC" : topType === "losers" ? "ASC" : "DESC";
   const priceDifferenceField =
-    topType === "movers"
+    topType === "mover"
       ? "(regular_market_day_high - regular_market_day_low) / regular_market_day_low * 100"
       : "CAST(regular_market_price AS FLOAT) - CAST(previous_close AS FLOAT)";
 
   const orderField =
-    topType === "movers"
+    topType === "mover"
       ? Sequelize.literal(priceDifferenceField)
       : Sequelize.literal(
           "CAST(regular_market_price AS FLOAT) - CAST(previous_close AS FLOAT)"
@@ -895,9 +895,13 @@ const getMarketData = async (topType, market_type, limit, offset) => {
       "market_type",
       "regular_market_day_high",
       "regular_market_day_low",
-      [orderField, "price_difference"],
+      [orderField, topType === "mover" ? "move_per" : "price_difference"],
     ],
-    where: { market_type, type: "stock", status: "active" },
+    where: {
+      market_type,
+      type: "stock",
+      status: "active",
+    },
     order: [[orderField, orderDirection]],
     limit,
     offset,

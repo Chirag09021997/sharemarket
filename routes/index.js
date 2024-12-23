@@ -46,4 +46,5 @@ router.get("/setting", authCheck, settingController.index);
 router.post("/setting", authCheck, settingController.update);
 router.get("/tracking", authCheck, trackingController.index);
 router.get("/feedback", authCheck, feedbackController.index);
+router.delete("/feedback/:id", authCheck, feedbackController.deleteRecord);
 module.exports = router;

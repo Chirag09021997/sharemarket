@@ -3,6 +3,13 @@
 
 <head>
   <%- include('partials/head',{title:title}) %>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
+    <style>
+      #main {
+        width: 600px;
+        height: 400px;
+      }
+    </style>
 </head>
 
 <body>
@@ -33,9 +40,63 @@
                   </div>
                   <% }) } %>
             </div>
+
+            <div class="max-w-sm my-2">
+              <label for="countries"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Filter:</label>
+              <select id="countries"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <option selected>Choose a filter</option>
+                <option value="today">Today</option>
+                <option value="yesterday">YesterDay</option>
+                <option value="week">Week</option>
+                <option value="fifty_day">15 Days</option>
+                <option value="custom">Current Month</option>
+              </select>
+            </div>
+
+            <div id="main" style="width: 600px; height: 400px;" class="border-2"></div>
+
           </div>
         </section>
       </div>
+      <script>
+        // Pass track_keys and track_values as JSON arrays from the server-side
+        const keys = "<%= JSON.parse(track_keys) %>";
+        const values = "<%= JSON.parse(track_values) %>";
+
+        // Check if the values are correctly assigned
+        console.log("Keys:", keys);  // Should print: ['organic', 'paid', 'none']
+        console.log("Values:", values);  // Should print: [1, 5, 2] (or corresponding values)
+
+        // Ensure each promotion type has a corresponding value (if not, assign it 0)
+        const promotionTypes = ['organic', 'paid', 'none'];
+        const completeValues = promotionTypes.map(type => {
+          const index = keys.indexOf(type);
+          return index >= 0 ? values[index] : 0;  // If the key is missing, set the value to 0
+        });
+
+        var chartDom = document.getElementById('main');
+        var myChart = echarts.init(chartDom);
+
+        var option = {
+          xAxis: {
+            type: 'category',
+            data: keys  // Use the keys here
+          },
+          yAxis: {
+            type: 'value'
+          },
+          series: [
+            {
+              type: 'bar',
+              data: completeValues  // Use the complete values (with missing values filled in as 0)
+            }
+          ]
+        };
+
+        myChart.setOption(option);
+      </script>
 </body>
 
 </html>

@@ -14,6 +14,11 @@
           searching: true,
           ordering: true,
           order: [[1, 'asc']],
+          columnDefs: [{
+            targets: "_all",
+            orderable: true
+          }],
+          stateSave: true
         });
       });
     </script>
