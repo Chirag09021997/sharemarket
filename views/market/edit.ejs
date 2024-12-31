@@ -222,6 +222,7 @@
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Enter regular market price"
                 value="<%= formData?.regular_market_price ?? 0 %>"
+                step="0.01"
                 required
               />
               <p class="text-red-500"><%= errors?.regular_market_price %></p>
@@ -239,6 +240,7 @@
                 name="previous_close"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Enter regular market price"
+                step="0.01"
                 value="<%= formData?.previous_close ?? 0 %>"
               />
               <p class="text-red-500"><%= errors?.previous_close %></p>
