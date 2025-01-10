@@ -318,6 +318,7 @@ const overViewList = async (req, res) => {
     const offset = apiLast * BATCH_SIZE;
     const market = await MarketModel.findAll({
       attributes: ["symbol"],
+      where: { status: "active" },
       offset: offset,
       limit: BATCH_SIZE,
     });
@@ -585,7 +586,15 @@ const updateMarketData = async (req, res) => {
         const unavailableSymbols = unavailable_symbol.split(",");
         await MarketModel.update(
           { status: "inactive" },
-          { where: { symbol: unavailableSymbols } }
+          {
+            where: {
+              symbol: unavailableSymbols,
+              [Op.or]: [
+                { response: null },
+                Sequelize.literal("JSON_LENGTH(response) = 0"),
+              ],
+            },
+          }
         );
       }
 
@@ -593,6 +602,7 @@ const updateMarketData = async (req, res) => {
       const offset = apiLast * BATCH_SIZE;
       const market = await MarketModel.findAll({
         attributes: ["symbol"],
+        where: { status: "active" },
         offset: offset,
         limit: BATCH_SIZE,
       });
